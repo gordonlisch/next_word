@@ -21,34 +21,6 @@ from nltk.corpus import stopwords
 import csv
 from tqdm import tqdm
 
-#nltk.download('punkt')
-#nltk.download('stopwords')
-#tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
-##stops = set(stopwords.words("english"))
-
-
-def data2memmap(path,mmap,no_of_reviews,maxlen,num_features,output):
-    file = csv.reader(open(path, 'rt'))
-    mmap = os.path.join(output,mmap)
-    data = np.memmap(mmap, dtype='float', mode='w+', shape=(no_of_reviews, maxlen, num_features))
-    for (idx, row) in enumerate(file):
-        review_length = len(row)
-        review_length = min(review_length,maxlen)
-        review = list()
-        print(idx)
-        if review_length == 1:
-           wordtmp = row[0].replace('        ', ' ').replace('       ', ' ').replace('      ', ' ').replace('     ', ' ').replace('    ', ' ').replace('   ', ' ').replace('  ', ' ').replace(' ]', '').replace(']', '').replace('[ ', '').replace('[', '').replace('\n', '')
-           wordtmp = wordtmp.split(' ')
-           review.append(np.array(wordtmp).astype('float'))
-        if review_length > 1:
-            for i in range(review_length):
-                wordtmp = row[i].replace('        ', ' ').replace('       ', ' ').replace('      ', ' ').replace('     ', ' ').replace('    ', ' ').replace('   ', ' ').replace('  ', ' ').replace(' ]', '').replace(']', '').replace('[ ', '').replace('[', '').replace('\n', '')
-                wordtmp = wordtmp.split(' ')
-                review.append(np.array(wordtmp).astype('float'))
-        review = np.array(review)
-        data[idx, (maxlen - review.shape[0]):maxlen, :] = review
-    data.flush()
-
 
 if __name__ == '__main__':
 
@@ -59,13 +31,13 @@ if __name__ == '__main__':
 
     sentences = list()
     for line in filehandler:
-        line = re.sub("[^a-zA-Z .,?;]", "", line)
+        line = re.sub("[^a-zA-Z .,;]", "", line)
         sentences.append(line.split(' '))
 
     filehandler.close()
    
     # Creating the model and setting values for the various parameters, To do: finetuning
-    num_features = 10  # Word vector dimensionality
+    num_features = 100  # Word vector dimensionality
     min_word_count = 1  # Minimum word count
     num_workers = 4  # Number of parallel threads
     context = 10  # Context window size
@@ -90,24 +62,41 @@ if __name__ == '__main__':
 
     model.save("../data/prepared/M2V_model")
 
-    #csv_file = open('../data/prepared/TrainData.csv', 'w+')
-    #writer = csv.writer(csv_file, delimiter='|')
 
     no_of_reviews = sentences.__len__()
-    #maxlen = len(max(sentences, key=len))
-    maxlen=170
+    print(no_of_reviews)
+    maxlen = len(max(sentences, key=len))
+    print(maxlen)
+    size = 0
+    for sentence in sentences:
+        size += len(sentence)
+    print(size, no_of_reviews*maxlen)
+
+    shape = [no_of_reviews, size, num_features, model.wv.syn0.shape]
+    np.save('../data/prepared/shape.npy', shape)
 
 
-    data = np.memmap('../data/prepared/TrainMap', dtype='float', mode='w+', shape=(no_of_reviews, maxlen, num_features))
+    data = np.memmap('../data/prepared/TrainMap', dtype='float', mode='w+', shape=(size, num_features))
 
 
+    #for (idxSentence, sentence) in enumerate(sentences):
+    #    sentencetmp = list()
+    #    for (idxWord, word) in enumerate(sentence):
+    #        sentencetmp.append(model[word])
+    #    sentencetmp = np.array(sentencetmp)
+    #    data[idxSentence, (maxlen - sentencetmp.shape[0]):maxlen, :] = sentencetmp
+    #    print(idxSentence)
+
+
+    position = 0
     for (idxSentence, sentence) in enumerate(sentences):
         sentencetmp = list()
         for (idxWord, word) in enumerate(sentence):
             sentencetmp.append(model[word])
         sentencetmp = np.array(sentencetmp)
-        data[idxSentence, (maxlen - sentencetmp.shape[0]):maxlen, :] = sentencetmp
-        print(idxSentence)
+        data[position:position+len(sentencetmp), :] = sentencetmp
+        position += len(sentencetmp)
+
 
 
 
