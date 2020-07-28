@@ -26,21 +26,23 @@ if __name__ == '__main__':
 
 
     # Maybe implement other ratios if necessary, Test data set split ratio
-
-    filehandler = open('../data/dataset/lambada_development_plain_text.txt', 'r')
-
     sentences = list()
-    for line in filehandler:
-        line = re.sub("[^a-zA-Z .,;]", "", line)
-        sentences.append(line.split(' '))
 
-    filehandler.close()
-   
+    for idx, filename in enumerate(os.listdir('../data/dataset/Fantasy/')):
+        filehandler = open(os.path.join('../data/dataset/Fantasy/', filename), 'r')
+        print(idx)
+        for line in filehandler:
+            line = re.sub("[^a-zA-Z .,;]", "", line)
+            sentences.append(line.split(' '))
+        filehandler.close()
+
+
+
     # Creating the model and setting values for the various parameters, To do: finetuning
-    num_features = 100  # Word vector dimensionality
+    num_features = 20  # Word vector dimensionality
     min_word_count = 1  # Minimum word count
-    num_workers = 4  # Number of parallel threads
-    context = 10  # Context window size
+    num_workers = 6  # Number of parallel threads
+    context = 20  # Context window size
     downsampling = 1e-3  # (0.001) Downsample setting for frequent words
 
     # Initializing the train model
@@ -63,16 +65,13 @@ if __name__ == '__main__':
     model.save("../data/prepared/M2V_model")
 
 
-    no_of_reviews = sentences.__len__()
-    print(no_of_reviews)
-    maxlen = len(max(sentences, key=len))
-    print(maxlen)
+    number_of_sentences = sentences.__len__()
     size = 0
     for sentence in sentences:
         size += len(sentence)
-    print(size, no_of_reviews*maxlen)
+    print('Total Number of words:', size, 'Total Number of Sentences', number_of_sentences)
 
-    shape = [no_of_reviews, size, num_features, model.wv.syn0.shape]
+    shape = [number_of_sentences, size, num_features, model.wv.syn0.shape]
     np.save('../data/prepared/shape.npy', shape)
 
 
@@ -95,7 +94,9 @@ if __name__ == '__main__':
             sentencetmp.append(model[word])
         sentencetmp = np.array(sentencetmp)
         data[position:position+len(sentencetmp), :] = sentencetmp
+        print(idxSentence/number_of_sentences)
         position += len(sentencetmp)
+
 
 
 
