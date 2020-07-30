@@ -40,63 +40,62 @@ if __name__ == '__main__':
 
     # Creating the model and setting values for the various parameters, To do: finetuning
     num_features = 20  # Word vector dimensionality
-    min_word_count = 1  # Minimum word count
+    min_word_count = 10  # Minimum word count
     num_workers = 6  # Number of parallel threads
-    context = 20  # Context window size
+    context = 30  # Context window size
     downsampling = 1e-3  # (0.001) Downsample setting for frequent words
 
     # Initializing the train model
 
     print("Training model....")
-    model = word2vec.Word2Vec(
-        sentences,
-        workers=num_workers,
-        size=num_features,
-        min_count=min_word_count,
-        window=context,
-        sample=downsampling
-    )
+    #model = word2vec.Word2Vec(
+    #    sentences,
+    #    workers=num_workers,
+    #    size=num_features,
+    #    min_count=min_word_count,
+    #    window=context,
+    #    sample=downsampling
+    #)
 
     # To make the model memory efficient
-    model.init_sims(replace=True)
+    #model.init_sims(replace=True)
 
     # Saving the model for later use. Can be loaded using Word2Vec.load()
 
-    model.save("../data/prepared/M2V_model")
+    #model.save("../data/prepared/M2V_model")
 
 
+    model = word2vec.Word2Vec.load('../data/prepared/M2V_model')
     number_of_sentences = sentences.__len__()
     size = 0
     for sentence in sentences:
         size += len(sentence)
     print('Total Number of words:', size, 'Total Number of Sentences', number_of_sentences)
 
-    shape = [number_of_sentences, size, num_features, model.wv.syn0.shape]
+    shape = [number_of_sentences, size, num_features, model.wv.syn0.shape, context]
     np.save('../data/prepared/shape.npy', shape)
 
 
     data = np.memmap('../data/prepared/TrainMap', dtype='float', mode='w+', shape=(size, num_features))
 
 
-    #for (idxSentence, sentence) in enumerate(sentences):
-    #    sentencetmp = list()
-    #    for (idxWord, word) in enumerate(sentence):
-    #        sentencetmp.append(model[word])
-    #    sentencetmp = np.array(sentencetmp)
-    #    data[idxSentence, (maxlen - sentencetmp.shape[0]):maxlen, :] = sentencetmp
-    #    print(idxSentence)
 
-
+    dumbwords=list()
     position = 0
     for (idxSentence, sentence) in enumerate(sentences):
         sentencetmp = list()
         for (idxWord, word) in enumerate(sentence):
-            sentencetmp.append(model[word])
+            try:
+                sentencetmp.append(model[word])
+            except Exception:
+                dumbwords.append(word)
         sentencetmp = np.array(sentencetmp)
         data[position:position+len(sentencetmp), :] = sentencetmp
         print(idxSentence/number_of_sentences)
         position += len(sentencetmp)
 
+    dumbwords=np.array(dumbwords)
+    np.save('../data/prepared/dumbwords.npy', dumbwords)
 
 
 

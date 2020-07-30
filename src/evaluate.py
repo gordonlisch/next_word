@@ -35,7 +35,7 @@ if __name__ == '__main__':
 
     filehandler.close()
 
-    num_features = 20  # Word vector dimensionality
+    num_features = 100  # Word vector dimensionality
 
 
     no_of_reviews = sentences.__len__()
@@ -60,4 +60,4 @@ if __name__ == '__main__':
     print(model.most_similar(predEvalY))
 
 
-    model.most_similar(positive=['man'],negative=['male'])
+    #model.most_similar(positive=['man'],negative=['male'])
