@@ -22,7 +22,9 @@ def train_model(model,trainX,batch_size,size,vecsize,epochs,context,testmode):
 def get_model(input_shape):
     model = Sequential()
     #add LSTM layer
-    model.add(LSTM(100, input_shape=input_shape))
+    model.add(LSTM(20, input_shape=input_shape, return_sequences=True))
+    model.add(LSTM(20, return_sequences=True))
+    model.add(LSTM(20))
     #output
     model.add(Dense(input_shape[1], activation='sigmoid'))
     model.compile('adam', 'mean_squared_error', metrics='accuracy')
@@ -59,7 +61,7 @@ if __name__ == '__main__':
     trainX = get_data(size, vecsize)
 
     #determine number of label classes
-    batch_size = 1000
+    batch_size = 64
     epochs = 1
 
 

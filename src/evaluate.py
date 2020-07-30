@@ -35,7 +35,7 @@ if __name__ == '__main__':
 
     filehandler.close()
 
-    num_features = 100  # Word vector dimensionality
+    num_features = 20  # Word vector dimensionality
 
 
     no_of_reviews = sentences.__len__()
