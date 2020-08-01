@@ -35,10 +35,10 @@ if __name__ == '__main__':
 
     filehandler.close()
 
-    num_features = 20  # Word vector dimensionality
+    [no_of_reviews, size, num_features, output_shape, context,vocab_size] = np.load('../data/prepared/shape.npy',allow_pickle=True)  # Word vector dimensionality
 
 
-    no_of_reviews = sentences.__len__()
+    #no_of_reviews = sentences.__len__()
     maxlen = len(max(sentences, key=len))
 
 
@@ -48,7 +48,10 @@ if __name__ == '__main__':
     for (idxSentence, sentence) in enumerate(sentences):
         sentencetmp = np.zeros((1, 20, num_features))
         for (idxWord, word) in enumerate(sentence):
-            sentencetmp[0, idxWord, :] = model[word]
+            try:
+                sentencetmp[0, idxWord, :] = model[word]
+            except Exception:
+                print('Exeption')
         sentencetmp2[idxSentence-1, :, :] = sentencetmp[0, :, :]
     print(sentencetmp2)
 
