@@ -36,10 +36,10 @@ if __name__ == '__main__':
             sentences.append(line.split(' '))
         filehandler.close()
 
-
+    sentences = [[ele for ele in sub if ele != ""] for sub in sentences]
 
     # Creating the model and setting values for the various parameters, To do: finetuning
-    num_features = 20  # Word vector dimensionality
+    num_features = 100  # Word vector dimensionality
     min_word_count = 100  # Minimum word count
     num_workers = 6  # Number of parallel threads
     context = 5  # Context window size
@@ -48,21 +48,21 @@ if __name__ == '__main__':
     # Initializing the train model
 
     print("Training model....")
-    model = word2vec.Word2Vec(
-        sentences,
-        workers=num_workers,
-        size=num_features,
-        min_count=min_word_count,
-        window=context,
-        sample=downsampling
-    )
+    #model = word2vec.Word2Vec(
+    #    sentences,
+    #    workers=num_workers,
+    #    size=num_features,
+    #    min_count=min_word_count,
+    #    window=context,
+    #    sample=downsampling
+    #)
 
     # To make the model memory efficient
-    model.init_sims(replace=True)
+    #model.init_sims(replace=True)
 
     # Saving the model for later use. Can be loaded using Word2Vec.load()
 
-    model.save("../data/prepared/M2V_model")
+    #model.save("../data/prepared/M2V_model")
 
 
     model = word2vec.Word2Vec.load('../data/prepared/M2V_model')
@@ -90,7 +90,10 @@ if __name__ == '__main__':
             except Exception:
                 dumbwords.append(word)
         sentencetmp = np.array(sentencetmp)
-        data[position:position+len(sentencetmp), :] = sentencetmp
+        try:
+            data[position:position+len(sentencetmp), :] = sentencetmp
+        except Exception:
+            print('emtpy sentence')
         print(idxSentence/number_of_sentences)
         position += len(sentencetmp)
 
