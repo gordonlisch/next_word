@@ -30,7 +30,7 @@ if __name__ == '__main__':
 
     for idx, filename in enumerate(os.listdir('../data/dataset/Fantasy/')):
         filehandler = open(os.path.join('../data/dataset/Fantasy/', filename), 'r')
-        print(idx)
+        print('Reading Book {}'.format(idx), end="\r")
         for line in filehandler:
             line = re.sub("[^a-zA-Z .,;]", "", line)
             sentences.append(line.split(' '))
@@ -73,7 +73,7 @@ if __name__ == '__main__':
         size += len(sentence)
     print('Total Number of words:', size, 'Total Number of Sentences', number_of_sentences)
 
-    shape = [number_of_sentences, size, num_features, model.wv.syn0.shape, context]
+    shape = [number_of_sentences, size, num_features, model.wv.syn0.shape]
     np.save('../data/prepared/shape.npy', shape)
 
 
@@ -95,7 +95,7 @@ if __name__ == '__main__':
             data[position:position+len(sentencetmp), :] = sentencetmp
         except Exception:
             print('emtpy sentence')
-        print(idxSentence/number_of_sentences)
+        print('Reading Book {}'.format(idxSentence/number_of_sentences), end="\r")
         position += len(sentencetmp)
 
     dumbwords=np.array(dumbwords)
