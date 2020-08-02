@@ -1,0 +1,24 @@
+<UI>
+
+    input: input
+
+    GridLayout:
+        cols:1
+        size: root.width, root.height
+
+
+        TextInput:
+            id: input
+            multiline: True
+
+        GridLayout:
+            cols:2
+            Button:
+                text:'Get next word'
+                on_press: root.next_word()
+
+            Button:
+                text:'get next 15 words'
+                on_press: root.next_words()
+
+

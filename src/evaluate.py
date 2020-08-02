@@ -21,11 +21,13 @@ import csv
 from tqdm import tqdm
 
 
+
+
 if __name__ == '__main__':
 
     #sentence = sys.argv[1]
     sentence = 'hello my name is lukas and he is am a cool guy but'
-    sentence = 'the sun is very mice'
+    #sentence = 'the sun is very nice'
 
     # Maybe implement other ratios if necessary, Test data set split ratio
 
@@ -58,7 +60,7 @@ if __name__ == '__main__':
 
     predEvalY = np.array(model2.predict(sentence))
     print(predEvalY)
-    print(model.most_similar(predEvalY, topn=3))
+    print(model.most_similar(predEvalY, topn=1))
 
 
     #model.most_similar(positive=['man'],negative=['male'])

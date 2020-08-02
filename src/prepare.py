@@ -39,10 +39,10 @@ if __name__ == '__main__':
     sentences = [[ele for ele in sub if ele != ""] for sub in sentences]
 
     # Creating the model and setting values for the various parameters, To do: finetuning
-    num_features = 100  # Word vector dimensionality
+    num_features = 25  # Word vector dimensionality
     min_word_count = 100  # Minimum word count
     num_workers = 6  # Number of parallel threads
-    context = 5  # Context window size
+    context = 10  # Context window size
     downsampling = 1e-3  # (0.001) Downsample setting for frequent words
 
     # Initializing the train model
