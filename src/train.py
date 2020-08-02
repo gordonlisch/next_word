@@ -27,7 +27,7 @@ def get_model(input_shape):
     model.add(LSTM(20))
     #output
     model.add(Dense(input_shape[1], activation='sigmoid'))
-    model.compile('adam', 'mean_squared_error', metrics='accuracy')
+    model.compile('Adam', 'poisson', metrics='accuracy')
     return model
 
 def get_data(size, vecsize):
