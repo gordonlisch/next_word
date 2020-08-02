@@ -23,44 +23,42 @@ from tqdm import tqdm
 
 if __name__ == '__main__':
 
+    #sentence = sys.argv[1]
+    sentence = 'hello my name is lukas and he is am a cool guy but'
+    sentence = 'the sun is very mice'
 
     # Maybe implement other ratios if necessary, Test data set split ratio
 
-    filehandler = open('../data/dataset/eval.txt', 'r')
+    sentence = re.sub("[^a-zA-Z ]", "", sentence)
+    sentence = sentence.split(' ')
+    sentences = [ele for ele in sentence if ele != ""]
 
-    sentences = list()
-    for line in filehandler:
-        line = re.sub("[^a-zA-Z ]", "", line)
-        sentences.append(line.split(' '))
+    #[no_of_reviews, size, num_features, output_shape, context,vocab_size] = np.load('../data/prepared/shape.npy', allow_pickle=True)  # Word vector dimensionality
 
-    filehandler.close()
-
-    [no_of_reviews, size, num_features, output_shape, context,vocab_size] = np.load('../data/prepared/shape.npy',allow_pickle=True)  # Word vector dimensionality
-
-
-    #no_of_reviews = sentences.__len__()
-    maxlen = len(max(sentences, key=len))
-
+    #maxlen = len(sentence)
 
     model = word2vec.Word2Vec.load('../data/prepared/M2V_model')
 
-    sentencetmp2=np.zeros((2, 20, num_features))
-    for (idxSentence, sentence) in enumerate(sentences):
-        sentencetmp = np.zeros((1, 20, num_features))
-        for (idxWord, word) in enumerate(sentence):
-            try:
-                sentencetmp[0, idxWord, :] = model[word]
-            except Exception:
-                print('Exeption')
-        sentencetmp2[idxSentence-1, :, :] = sentencetmp[0, :, :]
-    print(sentencetmp2)
+    sentence = [model[ele] for ele in sentence]
+    sentence = np.array(sentence)
+    sentence =sentence.reshape(1, sentence.shape[0], sentence.shape[1])
 
+    #sentencetmp2=np.zeros((2, 20, num_features))
+    #for (idxSentence, sentence) in enumerate(sentences):
+    #    sentencetmp = np.zeros((1, 20, num_features))
+    #    for (idxWord, word) in enumerate(sentence):
+    #        try:
+    #            sentencetmp[0, idxWord, :] = model[word]
+    #        except Exception:
+    #            print('Exeption')
+    #   sentencetmp2[idxSentence-1, :, :] = sentencetmp[0, :, :]
+    #print(sentencetmp2)
 
     model2 = keras.models.load_model('../data/model/model.h5')
 
-    predEvalY = np.array(model2.predict(sentencetmp2))
+    predEvalY = np.array(model2.predict(sentence))
     print(predEvalY)
-    print(model.most_similar(predEvalY))
+    print(model.most_similar(predEvalY, topn=3))
 
 
     #model.most_similar(positive=['man'],negative=['male'])

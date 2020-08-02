@@ -48,24 +48,25 @@ if __name__ == '__main__':
     # Initializing the train model
 
     print("Training model....")
-    #model = word2vec.Word2Vec(
-    #    sentences,
-    #    workers=num_workers,
-    #    size=num_features,
-    #    min_count=min_word_count,
-    #    window=context,
-    #    sample=downsampling
-    #)
+    model = word2vec.Word2Vec(
+        sentences,
+        workers=num_workers,
+        size=num_features,
+        min_count=min_word_count,
+        window=context,
+        sample=downsampling
+    )
 
     # To make the model memory efficient
-    #model.init_sims(replace=True)
+    model.init_sims(replace=True)
 
     # Saving the model for later use. Can be loaded using Word2Vec.load()
 
-    #model.save("../data/prepared/M2V_model")
+    model.save("../data/prepared/M2V_model")
 
 
-    model = word2vec.Word2Vec.load('../data/prepared/M2V_model')
+    #model = word2vec.Word2Vec.load('../data/prepared/M2V_model')
+
     number_of_sentences = sentences.__len__()
     size = 0
     for sentence in sentences:
