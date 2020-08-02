@@ -22,9 +22,8 @@ def train_model(model,trainX,batch_size,size,vecsize,epochs,context,testmode):
 def get_model(input_shape):
     model = Sequential()
     #add LSTM layer
-    model.add(LSTM(100, input_shape=input_shape, return_sequences=True))
-    model.add(LSTM(100, return_sequences=True))
-    model.add(LSTM(20))
+    model.add(LSTM(264, input_shape=input_shape))
+
     #output
     model.add(Dense(input_shape[1], activation='sigmoid'))
     model.compile('Adam', 'mean_squared_error', metrics='accuracy')
@@ -54,7 +53,7 @@ def generator(X,batch_size,vecsize,size,context):
 if __name__ == '__main__':
 
     #load shape of memory maps
-    [no_of_reviews, size, vecsize, output_shape, context] = np.load('../data/prepared/shape.npy')
+    [no_of_reviews, size, vecsize, output_shape, context] = np.load('../data/prepared/shape.npy', allow_pickle=True)
 
     #get datasets
     print('loading data...')
@@ -62,8 +61,8 @@ if __name__ == '__main__':
 
     #determine number of label classes
     batch_size = 64
-    epochs = 2
-
+    epochs = 6
+    context = 10
 
 
     #get model
